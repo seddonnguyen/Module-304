@@ -2354,6 +2354,7 @@
         < - Less than
         >= - Greater than or equal to
         <= - Less than or equal to
+        <=> - Equal to null-safe
 
 -- Optional: NOT
     The keyword to negate the ANY operator.
@@ -2797,6 +2798,13 @@
                                              FROM table_name
                                              WHERE condition)
 
+    - The scalar subquery returns a single value.
+    - The scalar subquery is used in the WHERE clause to compare the column value to the subquery value.
+    - Returns the rows from the table_name that the column_name1 satisfies the comparison with the subquery.
+    - Returns NULL if the subquery returns no rows.
+    - Results in an error if the subquery returns more than one row.
+    - Results in an error if the subquery returns more than one column.
+
 -- row_subquery:
     SELECT column_name1, column_name2, ...
     FROM table_name
@@ -2851,6 +2859,7 @@
         < - Less than
         >= - Greater than or equal to
         <= - Less than or equal to
+        <=> - Equal to null-safe
 
 -- condition:
     The condition to evaluate.
@@ -2951,6 +2960,7 @@
         < - Less than
         >= - Greater than or equal to
         <= - Less than or equal to
+        <=> - Equal to null-safe
 
 -- table_name2:
     The name of the table in the subquery to compare the column_name1 to.
@@ -3011,8 +3021,8 @@
 */
 
 /*
-### Local Variables ###
-    Local variables are used to store values temporarily.
+### User-Defined Variables ###
+    User-defined variables are used to store values temporarily.
 
 -- Syntax:
     SET @variable_name := value;
@@ -3092,4 +3102,834 @@
 -- Example 2:
     - Calls the stored procedure to get all orders.
     CALL get_orders();
+*/
+
+/*
+-- Arithmetic Operators:
+    + - Addition
+    - - Subtraction
+    * - Multiplication
+    / - Division
+    % - Modulus
+
+-- Comparison Operators:
+    = - Equal to
+    <> - Not equal to
+    != - Not equal to
+    > - Greater than
+    < - Less than
+    >= - Greater than or equal to
+    <= - Less than or equal to
+    <=> - NULL-safe equal to
+
+-- Logical Operators:
+    AND - Combines two conditions and returns true if both conditions are true.
+    OR - Combines two conditions and returns true if at least one condition is true.
+    NOT - Negates a condition and returns true if the condition is false.
+    BETWEEN - Returns true if a value is within a range.
+    EXIST - Returns true if a subquery returns any rows.
+    IN - Returns true if a value is in a list of values.
+    ALL - Returns true if all values in a list of values are true.
+    ANY - Returns true if any value in a list of values is true.
+    SOME - Returns true if some values in a list of values are true.
+    IS NULL - Returns true if a value is NULL.
+    IS NOT NULL - Returns true if a value is not NULL.
+    LIKE - Returns true if a value matches a pattern.
+    RLIKE - Returns true if a value matches a regular expression.
+    REGEXP - Returns true if a value matches a regular expression.
+
+-- Aggregate Functions:
+    AVG() - Returns the average value of a numeric column.
+    COUNT() - Returns the number of rows in a result set.
+    MAX() - Returns the maximum value of a column.
+    MIN() - Returns the minimum value of a column.
+    SUM() - Returns the sum of a numeric column.
+
+-- String Functions:
+    CHAR_LENGTH() - Returns the number of characters in a string.
+    CONCAT() - Concatenates two or more strings.
+    FORMAT() - Formats a number to a specified number of decimal places.
+    INSERT() - Inserts a substring into a string at a specified position.
+    INSTR() - Returns the position of the first occurrence of a substring in a string.
+    LCASE() - Converts a string to lowercase.
+    LEFT() - Returns the leftmost characters of a string.
+    LENGTH() - Returns the length of a string.
+    LOCATE() - Returns the position of the first occurrence of a substring in a string.
+    LOWER() - Converts a string to lowercase.
+    LTRIM() - Removes leading spaces from a string.
+    MID() - Returns a substring from a string.
+    POSITION() - Returns the position of the first occurrence of a substring in a string.
+    REPEAT() - Repeats a string a specified number of times.
+    REPLACE() - Replaces a substring in a string with another substring.
+    REVERSE() - Reverses a string.
+    RIGHT() - Returns the rightmost characters of a string.
+    RTRIM() - Removes trailing spaces from a string.
+    SPACE() - Returns a string of spaces.
+    STRCMP() - Compares two strings.
+    SUBSTRING() - Returns a substring from a string.
+    TRIM() - Removes leading and trailing spaces from a string.
+    UCASE() - Converts a string to uppercase.
+    UPPER() - Converts a string to uppercase.
+
+-- String Comparison Functions:
+    BINARY - Compares two strings using the binary collation.
+    COLLATE - Sets the collation for a string comparison.
+    LIKE - Compares a string to a pattern.
+    RLIKE - Compares a string to a regular expression.
+    REGEXP - Compares a string to a regular expression.
+
+-- Mathematical Functions:
+    ABS() - Returns the absolute value of a number.
+    ACOS() - Returns the arccosine of a number.
+    ASIN() - Returns the arcsine of a number.
+    ATAN() - Returns the arctangent of a number.
+    ATAN2() - Returns the arctangent of the quotient of two numbers.
+    CEIL() - Rounds a number up to the nearest integer.
+    CEILING() - Rounds a number up to the nearest integer.
+    COS() - Returns the cosine of a number.
+    COT() - Returns the cotangent of a number.
+    DEGREES() - Converts radians to degrees.
+    EXP() - Returns e raised to the power of a number.
+    FLOOR() - Rounds a number down to the nearest integer.
+    LN() - Returns the natural logarithm of a number.
+    LOG() - Returns the logarithm of a number to a specified base.
+    LOG10() - Returns the base-10 logarithm of a number.
+    PI() - Returns the value of pi.
+    POW() - Returns a number raised to the power of another number.
+    RADIANS() - Converts degrees to radians.
+    RAND() - Returns a random number.
+    ROUND() - Rounds a number to a specified number of decimal places.
+    SIGN() - Returns the sign of a number.
+    SIN() - Returns the sine of a number.
+    SQRT() - Returns the square root of a number.
+    TAN() - Returns the tangent of a number.
+    TRUNCATE() - Truncates a number to a specified number of decimal places.
+
+-- Date and Time Functions:
+    CURDATE() - Returns the current date.
+    CURTIME() - Returns the current time.
+    NOW() - Returns the current date and time.
+    DATE() - Extracts the date part of a date or datetime expression.
+    DAY() - Extracts the day of the month from a date or datetime expression.
+    DAYNAME() - Returns the name of the day of the week.
+    DAYOFMONTH() - Returns the day of the month for a date or datetime expression.
+    DAYOFWEEK() - Returns the day of the week for a date or datetime expression.
+    DAYOFYEAR() - Returns the day of the year for a date or datetime expression.
+    EXTRACT() - Extracts a part of a date or datetime expression.
+    HOUR() - Extracts the hour from a date or datetime expression.
+    MINUTE() - Extracts the minute from a date or datetime expression.
+    MONTH() - Extracts the month from a date or datetime expression.
+    QUARTER() - Extracts the quarter from a date or datetime expression.
+    SECOND() - Extracts the second from a date or datetime expression.
+    TIME() - Extracts the time part of a date or datetime expression.
+    TIMESTAMP() - Converts a date or datetime expression to a timestamp.
+    WEEK() - Extracts the week from a date or datetime expression.
+    YEAR() - Extracts the year from a date or datetime expression.
+
+-- Cast Functions:
+    CAST() - Converts a value to a specified data type.
+    CONVERT() - Converts a value to a specified data type.
+
+-- Control Flow Functions:
+    CASE - Evaluates a list of conditions and returns a value.
+    IF - Executes a statement if a condition is true.
+    IFNULL - Returns a specified value if a value is NULL.
+    NULLIF - Returns NULL if two expressions are equal.
+
+-- JOIN Functions:
+    CROSS JOIN - Returns the Cartesian product of two tables.
+    INNER JOIN - Returns the rows that have matching values in both tables.
+    LEFT JOIN - Returns all rows from the left table and the matched rows from the right table.
+    RIGHT JOIN - Returns all rows from the right table and the matched rows from the left table.
+    SELF JOIN - Joins a table to itself.
+    NATURAL JOIN - Joins two tables using implicit columns.
+
+-- Set Functions:
+    UNION - Combines the result sets of two or more SELECT statements.
+    UNION ALL - Combines the result sets of two or more SELECT statements, including duplicates.
+    INTERSECT - Returns the common rows between two SELECT statements.
+    EXCEPT - Returns the rows that are in the first SELECT statement but not in the second SELECT statement.
+
+-- Subquery Functions:
+    EXISTS - Returns true if a subquery returns any rows.
+    IN - Returns true if a value is in a list of values.
+    ALL - Returns true if all values in a list of values are true.
+    ANY - Returns true if any value in a list of values is true.
+    SOME - Returns true if some values in a list of values are true.
+
+-- Subquery Comparison Functions:
+    = ALL - Returns true if a value is equal to all values in a list of values.
+    <> ALL - Returns true if a value is not equal to all values in a list of values.
+    > ALL - Returns true if a value is greater than all values in a list of values.
+    < ALL - Returns true if a value is less than all values in a list of values.
+    >= ALL - Returns true if a value is greater than or equal to all values in a list of values.
+    <= ALL - Returns true if a value is less than or equal to all values in a list of values.
+    = ANY - Returns true if a value is equal to any value in a list of values.
+    <> ANY - Returns true if a value is not equal to any value in a list of values.
+    > ANY - Returns true if a value is greater than any value in a list of values.
+    < ANY - Returns true if a value is less than any value in a list of values.
+    >= ANY - Returns true if a value is greater than or equal to any value in a list of values.
+    <= ANY - Returns true if a value is less than or equal to any value in a list of values.
+    = SOME - Returns true if a value is equal to some value in a list of values.
+    <> SOME - Returns true if a value is not equal to some value in a list of values.
+    > SOME - Returns true if a value is greater than some value in a list of values.
+    < SOME - Returns true if a value is less than some value in a list of values.
+    >= SOME - Returns true if a value is greater than or equal to some value in a list of values.
+    <= SOME - Returns true if a value is less than or equal to some value in a list of values.
+
+-- Database Models:
+    - Hierarchical Model
+        - Represents data in a tree-like structure.
+    - Network Model
+        - Represents data in a graph-like structure.
+    - Relational Model
+        - Represents data in tables.
+    - Object-Oriented Model
+        - Represents data as objects.
+    - Object-Relational Model
+        - Represents data as objects and tables.
+    - Document Model
+        - Represents data as documents.
+    - Key-Value Model
+        - Represents data as key-value pairs.
+    - Graph Model
+        - Represents data as nodes and edges.
+
+-- ACID Database Properties:
+    - Atomicity
+        - Ensures that all operations in a transaction are completed successfully.
+    - Consistency
+        - Ensures that the database remains in a consistent state after a transaction.
+    - Isolation
+        - Ensures that transactions are executed independently of each other.
+    - Durability
+        - Ensures that the changes made by a transaction are permanent.
+
+-- Entity-Relationship Diagram (ERD)
+    - Entity-Relationship Diagram (ERD) is a visual representation of the entities and relationships in the database.
+    - ERD is used to design and model the database.
+    - ERD is used to communicate the database design.
+    - ERD is used to document the database design.
+    - ERD is used to validate the database design.
+    - ERD is used to implement the database design.
+
+-- Entity Relationship Diagram Components:
+    - Entities
+        - Represents a table in a database.
+        - Represents a concept, location, event, role, or thing.
+        - Represents a noun.
+        - Represents a row in a table.
+        - Represents a single instance of an entity.
+    - Attributes
+        - Represents a column in a table.
+        - Represents a fact or description of an entity.
+        - Represents a property of an entity.
+        - Represents a noun.
+    - Relationships
+        - Represents a connection between entities.
+        - Represents an association between entities.
+        - Represents a verb.
+        - Represents a connection between tables.
+    - Cardinality
+        - Represents the number of instances of an entity that can be associated with another entity.
+        - Represents the number of rows in a table that can be associated with another table.
+    - Primary Key
+        - Uniquely identifies a row in a table.
+        - Ensures that each row in a table is unique.
+        - Ensures that each row in a table is identifiable.
+    - Foreign Key
+        - Links a row in one table to a row in another table.
+        - Establishes a relationship between tables.
+        - Establishes a connection between tables.
+    - Index
+        - Improves the performance of queries.
+        - Retrieves data faster.
+        - Sorts and filters data.
+    - View
+        - Stores a query as a virtual table.
+        - Represents a subset of data from one or more tables.
+        - Simplifies complex queries.
+    - Trigger
+        - Executes a set of SQL statements in response to an event.
+        - Enforces constraints.
+        - Automates tasks.
+    - Procedure
+        - Executes a set of SQL statements.
+        - Automates tasks.
+        - Encapsulates logic.
+    - Function
+        - Returns a value based on input parameters.
+        - Encapsulates logic.
+        - Reuses code.
+    - Event
+        - Executes a set of SQL statements at a scheduled time.
+        - Automates tasks.
+        - Schedules tasks.
+    - Constraint
+        - Enforces rules on the data in a table.
+        - Ensures data integrity.
+        - Ensures data consistency.
+    - Key
+        - Uniquely identifies a row in a table.
+        - Ensures that each row in a table is unique.
+        - Ensures that each row in a table is identifiable.
+    - Optionality
+        - Represents the optionality of a relationship.
+        - Represents the minimum and maximum number of instances of an entity that can be associated with another entity.
+    - Participation
+        - Represents the participation of an entity in a relationship.
+        - Represents the minimum and maximum number of instances of an entity that can be associated with another entity.
+    - Generalization
+        - Represents a relationship between entities.
+        - Represents a connection between entities.
+        - Represents an association between entities.
+    - Specialization
+        - Represents a relationship between entities.
+        - Represents a connection between entities.
+        - Represents an association between entities.
+    - Aggregation
+        - Represents a relationship between entities.
+        - Represents a connection between entities.
+        - Represents an association between entities.
+
+-- Levels of Entity Relationship Diagram
+    - Conceptual Level
+        - Conceptual ERD is used to model the database at a high level.
+        - Conceptual ERD is used to represent the entities and relationships in the database.
+        - Conceptual ERD is used to define the scope of the database.
+        - Conceptual ERD is used to define the requirements of the database.
+        - Entity names are used to model the database at a high level.
+        - Entity relationships are used to model the database at a high level.
+    - Logical Level
+        - Logical ERD is used to model the database at a detailed level.
+        - Logical ERD is used to represent the entities, attributes, and relationships in the database.
+        - Logical ERD is used to define the structure of the database.
+        - Logical ERD is used to define the constraints of the database.
+        - Attributes are used to model the database at a detailed level.
+        - Primary keys are used to model the database at a detailed level.
+        - Foreign keys are used to model the database at a detailed level.
+        - Normalization is used to model the database at a detailed level.
+        - Logic Model is the process of arranging data into logical, organized groups of objects that can easily be queried.
+        - Logic Design reduce data repetition or eliminate it completely.
+    - Physical Level
+        - Physical ERD is used to model the database at a physical level.
+        - Physical ERD is used to represent the tables, columns, and indexes in the database.
+        - Physical ERD is used to define the storage of the database.
+        - Physical ERD is used to define the performance of the database.
+        - Tables names are used to model the database at a physical level.
+        - Column names are used to model the database at a physical level.
+        - Column data types are used to model the database at a physical level.
+        - Primary keys are used to model the database at a physical level.
+        - Foreign keys are used to model the database at a physical level.
+
+-- Conceptual Data Model Diagram:
+    - Entity Names
+    - Entity Relationships
+-- Logical Data Model Diagram:
+    - Entity Names
+    - Entity Relationships
+    - Attributes
+    - Primary Keys
+    - Foreign Keys
+-- Physical Data Model Diagram:
+    - Tables Names
+    - Column Names
+    - Column Data Types
+    - Primary Keys
+    - Foreign Keys
+
+-- Data Definition Language (DDL)
+    - Data Definition Language (DDL) is used to define the structure of the database.
+    - DDL is used to create, modify, and delete database objects.
+    - DDL is used to define the tables, views, indexes, procedures, functions, triggers, and events in the database.
+    - DDL is used to define the constraints on the tables.
+    - DDL is used to define the relationships between the tables.
+
+-- Data Manipulation Language (DML)
+    - Data Manipulation Language (DML) is used to manipulate the data in the database.
+    - DML is used to insert, update, delete, and retrieve data from the database.
+    - DML is used to query the database.
+    - DML is used to modify the data in the database.
+    - DML is used to retrieve the data from the database.
+
+-- Data Query Language (DQL)
+    - Data Query Language (DQL) is used to retrieve data from the database.
+    - DQL is used to query the database.
+    - DQL is used to retrieve the data from the database.
+    - DQL is used to select, filter, and sort the data in the database.
+    - DQL is used to retrieve the data from the tables.
+
+-- Data Control Language (DCL)
+    - Data Control Language (DCL) is used to control the access to the database.
+    - DCL is used to grant and revoke privileges to users.
+    - DCL is used to control the permissions on the database objects.
+
+-- Transaction Control Language (TCL)
+    - Transaction Control Language (TCL) is used to control the transactions in the database.
+    - TCL is used to start, commit, and rollback transactions.
+    - TCL is used to control the changes made by transactions.
+
+-- Database Objects:
+    - Tables
+        - Tables are used to store data in rows and columns.
+        - Tables are used to represent entities in the database.
+        - Tables are used to store the data in the database.
+    - Views
+        - Views are used to store a query as a virtual table.
+        - Views are used to represent a subset of data from one or more tables.
+        - Views are used to simplify complex queries.
+    - Indexes
+        - Indexes are used to improve the performance of queries.
+        - Indexes are used to retrieve data faster.
+        - Indexes are used to sort and filter data.
+    - Procedures
+        - Procedures are used to execute a set of SQL statements.
+        - Procedures are used to automate tasks.
+        - Procedures are used to encapsulate logic.
+    - Functions
+        - Functions are used to return a value based on input parameters.
+        - Functions are used to encapsulate logic.
+        - Functions are used to reuse code.
+    - Triggers
+        - Triggers are used to execute a set of SQL statements in response to an event.
+        - Triggers are used to enforce constraints.
+        - Triggers are used to automate tasks.
+    - Events
+        - Events are used to execute a set of SQL statements at a scheduled time.
+        - Events are used to automate tasks.
+        - Events are used to schedule tasks.
+
+-- Table Constraints:
+    - NOT NULL
+        - NOT NULL constraint ensures that a column cannot contain NULL values.
+        - NOT NULL constraint ensures that a column must contain a value.
+    - UNIQUE
+        - UNIQUE constraint ensures that all values in a column are unique.
+        - UNIQUE constraint ensures that a column cannot contain duplicate values.
+    - PRIMARY KEY
+        - PRIMARY KEY constraint combines the NOT NULL and UNIQUE constraints.
+        - PRIMARY KEY constraint ensures that a column cannot contain NULL values and duplicate values.
+    - FOREIGN KEY
+        - FOREIGN KEY constraint ensures that values in a column match values in another table.
+        - FOREIGN KEY constraint ensures that a column must contain values that exist in another table.
+    - CHECK
+        - CHECK constraint ensures that values in a column meet a specified condition.
+        - CHECK constraint ensures that a column must contain values that satisfy a condition.
+    - DEFAULT
+        - DEFAULT constraint sets a default value for a column.
+        - DEFAULT constraint sets a value for a column if no value is specified.
+
+-- Column Constraints:
+    - NOT NULL
+        - NOT NULL constraint ensures that a column cannot contain NULL values.
+        - NOT NULL constraint ensures that a column must contain a value.
+    - UNIQUE
+        - UNIQUE constraint ensures that all values in a column are unique.
+        - UNIQUE constraint ensures that a column cannot contain duplicate values.
+    - PRIMARY KEY
+        - PRIMARY KEY constraint combines the NOT NULL and UNIQUE constraints.
+        - PRIMARY KEY constraint ensures that a column cannot contain NULL values and duplicate values.
+    - FOREIGN KEY
+        - FOREIGN KEY constraint ensures that values in a column match values in another table.
+        - FOREIGN KEY constraint ensures that a column must contain values that exist in another table.
+    - CHECK
+        - CHECK constraint ensures that values in a column meet a specified condition.
+        - CHECK constraint ensures that a column must contain values that satisfy a condition.
+    - DEFAULT
+        - DEFAULT constraint sets a default value for a column.
+        - DEFAULT constraint sets a value for a column if no value is specified.
+
+-- Table Relationships:
+    - One-to-One
+        - One-to-One relationship is a relationship where one record in a table is related to one record in another table.
+        - One-to-One relationship is a relationship where one record in a table is associated with one record in another table.
+    - One-to-Many
+        - One-to-Many relationship is a relationship where one record in a table is related to multiple records in another table.
+        - One-to-Many relationship is a relationship where one record in a table is associated with multiple records in another table.
+    - Many-to-Many
+        - Many-to-Many relationship is a relationship where multiple records in a table are related to multiple records in another table.
+        - Many-to-Many relationship is a relationship where multiple records in a table are associated with multiple records in another table.
+
+-- DQL Functions:
+    SELECT - SELECT statement is used to retrieve data from a database.
+    SELECT - SELECT statement is used to query the database.
+    SELECT - SELECT statement is used to retrieve the data from the database.
+
+-- DML Functions:
+    SELECT - SELECT statement is used to retrieve data from a database.
+    INSERT - INSERT statement is used to insert data into a table.
+    UPDATE - UPDATE statement is used to update data in a table.
+    DELETE - DELETE statement is used to delete data from a table.
+
+-- DDL Functions:
+    CREATE - CREATE statement is used to create a new database object.
+    ALTER - ALTER statement is used to modify an existing database object.
+    DROP - DROP statement is used to delete a database object.
+    TRUNCATE - TRUNCATE statement is used to delete all rows from a table.
+    RENAME - RENAME statement is used to rename a database object.
+
+-- DCL Functions:
+    GRANT - GRANT statement is used to grant privileges to a user.
+    REVOKE - REVOKE statement is used to revoke privileges from a user.
+
+-- TCL Functions:
+    BEGIN - BEGIN statement is used to start a transaction.
+    COMMIT - COMMIT statement is used to commit a transaction.
+    ROLLBACK - ROLLBACK statement is used to roll back a transaction.
+
+-- Normalization - Reduces redundancy and improves data integrity.
+        - First Normal Form (1NF)
+            - Eliminates repeating groups in a table.
+            - All Attributes have a unique name.
+            - Atomicity of data.
+            - Each column has a single (atomic) value.
+            - Each row is unique.
+            - Each column has a unique name.
+            - Each table has a unique name.
+            - Each table has a primary key.
+            - Values are stored in the table should be of the same domain.
+        - Second Normal Form (2NF)
+            - Eliminates partial dependencies in a table.
+            - All non-key attributes are fully functional dependent on the primary key.
+        - Third Normal Form (3NF)
+            - Eliminates transitive dependencies in a table.
+            - All non-key attributes are non-transitively dependent on the primary key.
+            - Remove columns that are not dependent on the primary key.
+        - Boyce-Codd Normal Form (BCNF)
+            - Eliminates non-trivial dependencies in a table.
+        - Fourth Normal Form (4NF)
+            - Eliminates multi-valued dependencies in a table.
+        - Fifth Normal Form (5NF)
+            - Eliminates join dependencies in a table.
+-- Denormalization - Combines tables to improve performance.
+        - Combines multiple tables into a single table.
+        - Reduces the number of tables in a database.
+        - Improves the performance of queries.
+        - Increases the redundancy of data.
+
+-- CRUD Functions:
+    CREATE - CREATE statement is used to create a new database object.
+    READ - READ statement is used to retrieve data from a database.
+    UPDATE - UPDATE statement is used to update data in a table.
+    DELETE - DELETE statement is used to delete data from a table.
+
+-- Advantage of RDBMS
+    - **Simplicity**
+        - A Relational data model in DBMS is simpler than the hierarchical and network model.
+    - **Structural Independence**
+        - The relational database is only concerned with data, not with a structure. This can improve the model's performance.
+    - **Easy to use**
+        - The relational model in a DBMS, with its intuitive tables of rows and columns, is a user-friendly tool that you can easily grasp and navigate.
+    - **Query capability**
+        - It makes it possible for a high-level query language like [SQL](https://www.guru99.com/sql.html) to avoid complex database navigation.
+    - **Data independence**
+        - The Structure of the Relational database can be changed without having to change any application.
+
+
+-- Table Functions:
+    CREATE TABLE - Creates a new table.
+    ALTER TABLE - Modifies an existing table.
+    DROP TABLE - Deletes a table.
+    TRUNCATE TABLE - Deletes all rows from a table.
+    RENAME TABLE - Renames a table.
+    DESCRIBE - Describes the columns of a table.
+    SHOW TABLES - Shows the tables in a database.
+
+-- Constraint Functions:
+    ADD CONSTRAINT - Adds a constraint to a table.
+    DROP CONSTRAINT - Deletes a constraint from a table.
+
+-- Constraint Functions:
+    PRIMARY KEY - Adds a primary key constraint to a table.
+    FOREIGN KEY - Adds a foreign key constraint to a table.
+    UNIQUE - Adds a unique constraint to a table.
+    CHECK - Adds a check constraint to a table.
+    DEFAULT - Adds a default constraint to a table.
+    NOT NULL - Adds a not null constraint to a table.
+
+-- Column Functions:
+    ADD COLUMN - Adds a column to a table.
+    MODIFY COLUMN - Modifies a column in a table.
+    DROP COLUMN - Deletes a column from a table.
+    RENAME COLUMN - Renames a column in a table.
+
+-- Index Functions:
+    CREATE INDEX - Creates an index on a table.
+    DROP INDEX - Deletes an index from a table.
+
+-- View Functions:
+    CREATE VIEW - Creates a view from a SELECT statement.
+    DROP VIEW - Deletes a view.
+    SHOW CREATE VIEW - Shows the CREATE VIEW statement for a view.
+
+-- User Functions:
+    CREATE USER - Creates a new user.
+    DROP USER - Deletes a user.
+    RENAME USER - Renames a user.
+    SET PASSWORD - Sets a password for a user.
+    GRANT - Grants privileges to a user.
+    REVOKE - Revokes privileges from a user.
+
+
+-- Session Functions:
+    SET - Sets a session variable.
+    SHOW - Shows the value of a session variable.
+
+-- System Functions:
+    DATABASE() - Returns the current database name.
+    SCHEMA() - Returns the current database name.
+    VERSION() - Returns the version of the database.
+
+-- Information Schema Functions:
+    INFORMATION_SCHEMA - Returns information about the database.
+
+-- User-Defined Functions:
+    CREATE FUNCTION - Creates a user-defined function.
+    DROP FUNCTION - Deletes a user-defined function.
+
+-- Stored Procedure Functions:
+    CREATE PROCEDURE - Creates a stored procedure.
+    DROP PROCEDURE - Deletes a stored procedure.
+
+-- Trigger Functions:
+    CREATE TRIGGER - Creates a trigger.
+    DROP TRIGGER - Deletes a trigger.
+
+-- Event Functions:
+    CREATE EVENT - Creates an event.
+    DROP EVENT - Deletes an event.
+
+-- Cursor Functions:
+    DECLARE - Declares a cursor.
+    OPEN - Opens a cursor.
+    FETCH - Fetches a row from a cursor.
+    CLOSE - Closes a cursor.
+
+-- Error Functions:
+    SIGNAL - Raises an error.
+    RESIGNAL - Raises an error.
+    GET DIAGNOSTICS - Returns diagnostic information.
+
+-- Lock Functions:
+    GET_LOCK - Acquires a named lock.
+    RELEASE_LOCK - Releases a named lock.
+
+-- Grouping Functions:
+    GROUP_CONCAT() - Concatenates values into a single string.
+    GROUPING() - Returns the grouping of a set of values.
+    GROUPING_ID() - Returns the grouping ID of a set of values.
+
+-- Encryption Functions:
+    AES_DECRYPT() - Decrypts an encrypted string.
+    AES_ENCRYPT() - Encrypts a string.
+    DES_DECRYPT() - Decrypts an encrypted string.
+    DES_ENCRYPT() - Encrypts a string.
+
+-- Hash Functions:
+    MD5() - Calculates the MD5 hash of a string.
+    SHA1() - Calculates the SHA-1 hash of a string.
+    SHA() - Calculates the SHA-1 hash of a string.
+    SHA2() - Calculates the SHA-2 hash of a string.
+
+-- Miscellaneous Functions:
+    UUID() - Returns a UUID.
+
+-- Compression Functions:
+    COMPRESS() - Compresses a string.
+    UNCOMPRESS() - Uncompresses a string.
+
+-- Bit Functions:
+    BIT_AND() - Returns the bitwise AND of two numbers.
+    BIT_COUNT() - Returns the number of bits set to 1.
+    BIT_LENGTH() - Returns the length of a string in bits.
+    BIT_OR() - Returns the bitwise OR of two numbers.
+    BIT_XOR() - Returns the bitwise XOR of two numbers.
+
+-- JSON Functions:
+    JSON_ARRAY() - Returns a JSON array.
+    JSON_ARRAYAGG() - Returns a JSON array aggregated from a result set.
+    JSON_ARRAY_APPEND() - Appends a value to a JSON array.
+    JSON_ARRAY_INSERT() - Inserts a value into a JSON array.
+    JSON_CONTAINS() - Returns true if a JSON document contains a specified value.
+    JSON_CONTAINS_PATH() - Returns true if a JSON document contains a specified path.
+    JSON_DEPTH() - Returns the depth of a JSON document.
+    JSON_EXTRACT() - Extracts a value from a JSON document.
+    JSON_INSERT() - Inserts a value into a JSON document.
+    JSON_KEYS() - Returns the keys from a JSON document.
+    JSON_LENGTH() - Returns the length of a JSON document.
+    JSON_MERGE() - Merges two or more JSON documents.
+    JSON_MERGE_PATCH() - Merges two JSON documents.
+    JSON_MERGE_PRESERVE() - Merges two JSON documents.
+    JSON_OBJECT() - Returns a JSON object.
+    JSON_OBJECTAGG() - Returns a JSON object aggregated from a result set.
+    JSON_PRETTY() - Returns a formatted JSON document.
+    JSON_QUOTE() - Quotes a JSON document.
+    JSON_REMOVE() - Removes a value from a JSON document.
+    JSON_REPLACE() - Replaces a value in a JSON document.
+    JSON_SEARCH() - Searches a JSON document for a specified value.
+    JSON_SET() - Sets a value in a JSON document.
+    JSON_STORAGE_SIZE() - Returns the storage size of a JSON document.
+    JSON_TYPE() - Returns the type of a JSON value.
+    JSON_UNQUOTE() - Unquotes a JSON document.
+    JSON_VALID() - Returns true if a JSON document is valid.
+
+
+-- Database Indexes:
+    - Clustered Index
+        - Stores the data rows in the index.
+    - Non-Clustered Index
+        - Stores the data rows separately from the index.
+    - Unique Index
+        - Ensures that all values in a column are unique.
+    - Composite Index
+        - An index that consists of multiple columns.
+    - Covering Index
+        - An index that includes all the columns in a query.
+    - Full-Text Index
+        - An index that is used for full-text searches.
+
+-- Database Views:
+    - Virtual Table
+        - A table that is created from a SELECT statement.
+    - Read-Only
+        - A view that cannot be modified.
+    - Updatable
+        - A view that can be modified.
+    - Materialized
+        - A view that stores the results of the SELECT statement.
+
+-- Database Triggers:
+    - Stored Procedure
+        - A set of SQL statements that are executed when a specific event occurs.
+    - Event
+        - An action that triggers the execution of a stored procedure.
+    - Trigger
+        - A stored procedure that is executed when a specific event occurs.
+    - Before Trigger
+        - A trigger that is executed before the event occurs.
+    - After Trigger
+        - A trigger that is executed after the event occurs.
+
+-- Database Locks:
+    - Shared Lock
+        - Prevents other transactions from modifying a resource.
+    - Exclusive Lock
+        - Prevents other transactions from reading or modifying a resource.
+    - Implicit Lock
+        - Automatically acquired by the database.
+    - Explicit Lock
+        - Manually acquired by the user.
+
+-- Database Backup and Recovery:
+    - Full Backup
+        - Backs up the entire database.
+    - Differential Backup
+        - Backs up the changes since the last full backup.
+    - Incremental Backup
+        - Backs up the changes since the last backup.
+    - Point-In-Time Recovery
+        - Restores the database to a specific point in time.
+    - Rollback
+        - Reverts the database to a previous state.
+    - Recovery
+        - Restores the database to a consistent state.
+
+-- Database Replication:
+    - Master-Slave Replication
+        - A master database replicates data to one or more slave databases.
+    - Master-Master Replication
+        - Two or more databases replicate data to each other.
+    - Multi-Master Replication
+        - Multiple databases replicate data to each other.
+    - One-Way Replication
+        - Data is replicated from one database to another.
+    - Two-Way Replication
+        - Data is replicated between two databases.
+
+-- Database Sharding:
+    - Horizontal Sharding
+        - Splits a table into multiple tables.
+    - Vertical Sharding
+        - Splits a table into multiple columns.
+    - Key-Based Sharding
+        - Splits a table based on a key.
+    - Range-Based Sharding
+        - Splits a table based on a range.
+    - Hash-Based Sharding
+        - Splits a table based on a hash function.
+
+-- Database Partitioning:
+    - Range Partitioning
+        - Splits a table based on a range of values.
+    - List Partitioning
+        - Splits a table based on a list of values.
+    - Hash Partitioning
+        - Splits a table based on a hash function.
+    - Key Partitioning
+        - Splits a table based on a key.
+    - Composite Partitioning
+        - Splits a table based on multiple criteria.
+
+-- Database Clustering:
+    - Shared-Nothing
+        - Each node in the cluster has its own storage.
+    - Shared-Disk
+        - All nodes in the cluster share the same storage.
+    - Master-Slave
+        - One node in the cluster is the master and the others are slaves.
+    - Master-Master
+        - All nodes in the cluster can read and write data.
+    - Active-Passive
+        - One node in the cluster is active and the others are passive.
+
+-- Database Scalability:
+    - Vertical Scaling
+        - Increases the capacity of a single server.
+    - Horizontal Scaling
+        - Increases the capacity by adding more servers.
+    - Read Scaling
+        - Increases the capacity for read operations.
+    - Write Scaling
+        - Increases the capacity for write operations.
+    - Load Balancing
+        - Distributes the workload across multiple servers.
+
+-- Database Security:
+    - Authentication
+        - Verifies the identity of a user.
+    - Authorization
+        - Grants or denies access to resources.
+    - Encryption
+        - Converts data into a secure format.
+    - Auditing
+        - Tracks and logs database activities.
+    - Backup and Recovery
+        - Protects data from loss or corruption.
+
+-- Database Performance Tuning:
+    - Indexing
+        - Improves the performance of SELECT queries.
+    - Query Optimization
+        - Improves the performance of SQL queries.
+    - Caching
+        - Stores frequently accessed data in memory.
+    - Partitioning
+        - Splits a table into smaller parts.
+    - Sharding
+        - Splits a table into multiple tables.
+
+-- Database Monitoring:
+    - Performance
+        - Monitors the performance of the database.
+    - Availability
+        - Monitors the availability of the database.
+    - Security
+        - Monitors the security of the database.
+    - Backup and Recovery
+        - Monitors the backup and recovery of the database.
+    - Replication
+        - Monitors the replication of the database.
+
+
+
 */
