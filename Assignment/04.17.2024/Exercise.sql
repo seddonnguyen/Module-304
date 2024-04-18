@@ -27,6 +27,7 @@ WITH USER #2.
 
 -- Step 2
 -- 1. Create three tables
+
 # CREATE TABLE product
 # (
 #     id    INT PRIMARY KEY AUTO_INCREMENT,
