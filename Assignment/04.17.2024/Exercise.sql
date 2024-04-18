@@ -232,6 +232,7 @@ WITH USER #2.
 # ORDER BY markup DESC;
 
 -- Brands with the most markup and products and total price
+<<<<<<< HEAD
 SELECT b.name                                        AS brand,
        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
@@ -244,18 +245,29 @@ GROUP BY 1
 ORDER BY markup DESC;
 
 -- Brands with the most markup and products and total price and orders
-SELECT b.name                                        AS brand,
-       GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
-       COUNT(*)                                      AS orders,
-       ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
-       ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
-       ROUND(AVG(b.brand_markup), 2)                 AS markup
-FROM product_brand pb
-    JOIN product p ON pb.product_id = p.id
-    JOIN brand b ON pb.brand_id = b.id
-GROUP BY 1
-ORDER BY markup DESC;
-
+# SELECT b.name                                        AS brand,
+#        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
+#        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
+#        ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
+#        ROUND(AVG(b.brand_markup), 2)                 AS markup
+# FROM product_brand pb
+#     JOIN product p ON pb.product_id = p.id
+#     JOIN brand b ON pb.brand_id = b.id
+# GROUP BY 1
+# ORDER BY markup DESC;
+#
+# -- Brands with the most markup and products and total price and orders
+# SELECT b.name                                        AS brand,
+#        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
+#        COUNT(*)                                      AS orders,
+#        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
+#        ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
+#        ROUND(AVG(b.brand_markup), 2)                 AS markup
+# FROM product_brand pb
+#     JOIN product p ON pb.product_id = p.id
+#     JOIN brand b ON pb.brand_id = b.id
+# GROUP BY 1
+# ORDER BY markup DESC;
 
 -- Test Delete Cascade
 # START TRANSACTION;
