@@ -1,3 +1,0 @@
-SELECT w1.name, w1.continent, population
-FROM world w1
-WHERE 25000000 <= ALL(SELECT w2.population FROM world w2 WHERE w2.continent = w1.continent);
