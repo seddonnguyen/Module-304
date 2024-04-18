@@ -29,21 +29,22 @@ WITH USER #2.
 -- 1. Create three tables
 # CREATE TABLE product
 # (
-#     id   INT PRIMARY KEY AUTO_INCREMENT,
-#     name VARCHAR(255) NOT NULL,
+#     id    INT PRIMARY KEY AUTO_INCREMENT,
+#     name  VARCHAR(255) NOT NULL,
 #     price DECIMAL(10, 2) DEFAULT 0.0
 # );
 #
 # CREATE TABLE brand
 # (
-#     id   INT PRIMARY KEY AUTO_INCREMENT,
-#     name VARCHAR(255) NOT NULL,
+#     id           INT PRIMARY KEY AUTO_INCREMENT,
+#     name         VARCHAR(255) NOT NULL,
 #     brand_markup DECIMAL(10, 2) DEFAULT 0.0
 # );
-
-# CREATE TABLE product_brand (
+#
+# CREATE TABLE product_brand
+# (
 #     product_id INT,
-#     brand_id INT,
+#     brand_id   INT,
 #     PRIMARY KEY (product_id, brand_id),
 #     FOREIGN KEY (product_id) REFERENCES product (id)
 #         ON DELETE CASCADE
@@ -52,7 +53,7 @@ WITH USER #2.
 #         ON DELETE CASCADE
 #         ON UPDATE CASCADE
 # );
-
+#
 # CREATE TABLE order_product_brand
 # (
 #     id             INT PRIMARY KEY AUTO_INCREMENT,
@@ -66,46 +67,76 @@ WITH USER #2.
 # -- Step 3
 # -- 1. Insert five entities into each table
 
-# START TRANSACTION;
-#
+-- START TRANSACTION;
+
 # INSERT INTO product (name, price)
-# VALUES ('Product 1', FLOOR(RAND() * 10) + 1),
-#        ('Product 2', FLOOR(RAND() * 10) + 1),
-#        ('Product 3', FLOOR(RAND() * 10) + 1),
-#        ('Product 4', FLOOR(RAND() * 10) + 1),
-#        ('Product 5', FLOOR(RAND() * 10) + 1),
-#        ('Product 6', FLOOR(RAND() * 10) + 1),
-#        ('Product 7', FLOOR(RAND() * 10) + 1),
-#        ('Product 8', FLOOR(RAND() * 10) + 1),
-#        ('Product 9', FLOOR(RAND() * 10) + 1),
-#        ('Product 10', FLOOR(RAND() * 10) + 1);
+# WITH RECURSIVE
+#     n AS (SELECT 1 AS num
+#           UNION ALL
+#           SELECT num + 1
+#           FROM n
+#           WHERE num < 20),
+#     p AS (SELECT num, CONCAT('Product ', num) AS name, TRUNCATE(RAND() * 100, 2) AS price FROM n)
+# SELECT name, price
+# FROM p
+# ORDER BY num;
 #
 # INSERT INTO brand (name, brand_markup)
-# VALUES ('Brand 1', TRUNCATE(RAND(), 2)),
-#        ('Brand 2', TRUNCATE(RAND(), 2)),
-#        ('Brand 3', TRUNCATE(RAND(), 2)),
-#        ('Brand 4', TRUNCATE(RAND(), 2)),
-#        ('Brand 5', TRUNCATE(RAND(), 2)),
-#        ('Brand 6', TRUNCATE(RAND(), 2)),
-#        ('Brand 7', TRUNCATE(RAND(), 2)),
-#        ('Brand 8', TRUNCATE(RAND(), 2)),
-#        ('Brand 9', TRUNCATE(RAND(), 2)),
-#        ('Brand 10', TRUNCATE(RAND(), 2));
-#
+# WITH RECURSIVE
+#     n AS (SELECT 1 AS num
+#           UNION ALL
+#           SELECT num + 1
+#           FROM n
+#           WHERE num < 20),
+#     b AS (SELECT num, CONCAT('Brand ', num) AS name, TRUNCATE(RAND() * 0.6, 2) AS brand_markup FROM n)
+# SELECT name, brand_markup
+# FROM b
+# ORDER BY num;
+
 # INSERT INTO product_brand (product_id, brand_id)
-# SELECT p.id, b.id
-# FROM product p
-#     CROSS JOIN brand b;
+# WITH RECURSIVE n AS (SELECT 1 AS num,
+#                             (SELECT id FROM product ORDER BY RAND() LIMIT 1) AS product_id,
+#                             (SELECT id FROM brand ORDER BY RAND() LIMIT 1)   AS brand_id
+#                      UNION ALL
+#                      SELECT num + 1,
+#                             (SELECT id FROM product ORDER BY RAND() LIMIT 1),
+#                             (SELECT id FROM brand ORDER BY RAND() LIMIT 1)
+#                      FROM n
+#                      WHERE num < 100)
+# SELECT product_id, brand_id
+# FROM n
+# GROUP BY 1, 2;
 #
+# SELECT *
+# FROM product_brand;
+
 # INSERT INTO order_product_brand (product, brand, qty, price_per_unit)
+# WITH RECURSIVE n AS (SELECT 1                                                            AS num,
+#                             (SELECT brand_id FROM product_brand ORDER BY RAND() LIMIT 1) AS brand_id,
+#                             (SELECT product_id
+#                              FROM product_brand pb
+#                              WHERE pb.brand_id = brand_id
+#                              ORDER BY RAND()
+#                              LIMIT 1)                                                    AS product_id
+#                      UNION ALL
+#                      SELECT num + 1,
+#                             (SELECT brand_id FROM product_brand ORDER BY RAND() LIMIT 1),
+#                             (SELECT product_id
+#                              FROM product_brand pb
+#                              WHERE pb.brand_id = brand_id
+#                              ORDER BY RAND()
+#                              LIMIT 1)
+#                      FROM n
+#                      WHERE num < 1000)
 # SELECT p.name                                   AS product,
 #        b.name                                   AS brand,
 #        FLOOR(RAND() * 10) + 1                   AS qty,
 #        ROUND(p.price * (1 + b.brand_markup), 2) AS price_per_unit
-# FROM product p
-#     JOIN product_brand pb ON p.id = pb.product_id
-#     JOIN brand b ON b.id = pb.brand_id;
-#
+# FROM n
+#     JOIN product p ON n.product_id = p.id
+#     JOIN brand b ON n.brand_id = b.id
+# ORDER BY num;
+
 # SELECT *
 # FROM product;
 #
@@ -114,16 +145,14 @@ WITH USER #2.
 #
 # SELECT *
 # FROM product_brand;
-#
+
 # SELECT *
 # FROM order_product_brand;
-#
-# ROLLBACK the transaction
-# COMMIT; -- COMMIT the transaction
 
--- Step 4
--- 1. Create three different queries using joins or subqueries to display the relationships between these tables with user #3.
+-- ROLLBACK;
+-- COMMIT;
 
+-- Step 4: Create three different queries using joins or subqueries to display the relationships between these tables with user #3.
 -- Brands and products
 # SELECT b.name AS brand, p.name AS product, ROUND(p.price * (1 + b.brand_markup), 2) AS price_per_unit
 # FROM product p
@@ -179,22 +208,16 @@ WITH USER #2.
 # GROUP BY 1
 # ORDER BY total_price DESC;
 #
-# -- Products with most orders and total price
-# SELECT product, COUNT(*) AS orders, ROUND(SUM(total_price), 2) AS total_price
-# FROM order_product_brand
-# GROUP BY 1
-# ORDER BY total_price DESC;
-#
-# -- Best selling products by brand, orders, and total price
+-- Best selling products by brand, orders, and total price
 # SELECT product,
-#        GROUP_CONCAT(DISTINCT brand SEPARATOR ', '),
+#        GROUP_CONCAT(DISTINCT brand SEPARATOR ', ') AS brands,
 #        COUNT(*)                   AS orders,
 #        ROUND(SUM(total_price), 2) AS total_price
 # FROM order_product_brand
 # GROUP BY 1
 # ORDER BY total_price DESC;
 #
-# -- Revenue by brand
+-- Revenue by brand
 # SELECT brand, ROUND(SUM(total_price), 2) AS revenue
 # FROM order_product_brand
 # GROUP BY 1
@@ -209,57 +232,11 @@ WITH USER #2.
 #     JOIN brand b ON pb.brand_id = b.id
 # GROUP BY 1
 # ORDER BY markup DESC;
-#
-# -- Brands with the most markup and total price
-# SELECT b.name                                        AS brand,
-#        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
-#        ROUND(AVG(b.brand_markup), 2)                 AS markup
-# FROM product_brand pb
-#     JOIN product p ON pb.product_id = p.id
-#     JOIN brand b ON pb.brand_id = b.id
-# GROUP BY 1
-# ORDER BY markup DESC;
-#
-# -- Brands with the most markup and products
-# SELECT b.name                                        AS brand,
-#        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
-#        ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
-#        ROUND(AVG(b.brand_markup), 2)                 AS markup
-# FROM product_brand pb
-#     JOIN product p ON pb.product_id = p.id
-#     JOIN brand b ON pb.brand_id = b.id
-# GROUP BY 1
-# ORDER BY markup DESC;
 
--- Brands with the most markup and products and total price
+-- Brands with the most markup and products and average price per unit
 # SELECT b.name                                        AS brand,
 #        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
-#        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
-#        ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
-#        ROUND(AVG(b.brand_markup), 2)                 AS markup
-# FROM product_brand pb
-#     JOIN product p ON pb.product_id = p.id
-#     JOIN brand b ON pb.brand_id = b.id
-# GROUP BY 1
-# ORDER BY markup DESC;
-
--- Brands with the most markup and products and total price and orders
-# SELECT b.name                                        AS brand,
-#        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
-#        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
-#        ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
-#        ROUND(AVG(b.brand_markup), 2)                 AS markup
-# FROM product_brand pb
-#     JOIN product p ON pb.product_id = p.id
-#     JOIN brand b ON pb.brand_id = b.id
-# GROUP BY 1
-# ORDER BY markup DESC;
-#
-# -- Brands with the most markup and products and total price and orders
-# SELECT b.name                                        AS brand,
-#        GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ')  AS products,
-#        COUNT(*)                                      AS orders,
-#        ROUND(SUM(p.price * (1 + b.brand_markup)), 2) AS total_price,
+#        COUNT(*)                                      AS num_products,
 #        ROUND(AVG(p.price * (1 + b.brand_markup)), 2) AS avg_price_per_unit,
 #        ROUND(AVG(b.brand_markup), 2)                 AS markup
 # FROM product_brand pb
